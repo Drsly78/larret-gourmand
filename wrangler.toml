@@ -1,0 +1,19 @@
+name = "larret-gourmand"
+compatibility_date = "2025-06-01"
+pages_build_output_dir = "public"
+
+# Base de données D1 (créée avec : npx wrangler d1 create larret-gourmand)
+# Coller ensuite l'identifiant renvoyé dans database_id.
+[[d1_databases]]
+binding = "DB"
+database_name = "larret-gourmand"
+database_id = "A_REMPLACER"
+
+# Les secrets (ADMIN_TOKEN, RESEND_API_KEY, MAIL_TO, MAIL_FROM, TURNSTILE_SECRET)
+# se définissent dans le tableau de bord Cloudflare Pages > Settings > Variables and Secrets,
+# ou en local dans le fichier .dev.vars (voir .dev.vars.example).
+
+# Stockage des photos envoyées depuis l'admin (créé avec : npx wrangler r2 bucket create larret-gourmand-photos)
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "larret-gourmand-photos"

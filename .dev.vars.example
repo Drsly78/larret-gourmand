@@ -1,0 +1,6 @@
+# Copier ce fichier en .dev.vars pour les tests en local (jamais commité)
+ADMIN_TOKEN=changez-moi-par-une-longue-phrase-secrete
+RESEND_API_KEY=
+MAIL_TO=vous@exemple.fr
+MAIL_FROM=L'Arrêt Gourmand <contact@larretgourmand.com>
+TURNSTILE_SECRET=

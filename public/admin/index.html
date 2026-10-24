@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tableau de contrôle – L'Arrêt Gourmand</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#3A2619">
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/img/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Rubik:wght@400;500;700&display=swap">
+<style>
+:root{--brun:#3A2619;--brun-2:#4A3224;--brun-3:#5C4133;--line:#6B4E3D;--creme:#FCF3E3;--creme-2:#EAD8BC;--cheddar:#F3AD3F;--ketchup:#D6402F;--mesclun:#7BA656;--display:'Alfa Slab One',Georgia,serif;--body:'Rubik','Segoe UI',Arial,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--brun);color:var(--creme);font:16px/1.5 var(--body);-webkit-font-smoothing:antialiased;padding-bottom:max(24px,env(safe-area-inset-bottom,0px))}
+h1,h2{font-family:var(--display);font-weight:400;margin:0;line-height:1.1}
+h1{font-size:1.4rem}h2{font-size:1.25rem;margin-bottom:12px;color:var(--cheddar)}
+.wrap{max-width:860px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top{position:sticky;top:0;z-index:10;background:rgba(58,38,25,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:58px}
+.tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:none;background:transparent;border:1px solid var(--line);color:var(--creme-2);padding:8px 14px;border-radius:999px;font:500 .92rem var(--body);cursor:pointer}
+.tabs button.is-on{background:var(--cheddar);color:#2A1A10;border-color:var(--cheddar)}
+.tabs button .n{display:inline-block;min-width:18px;padding:0 5px;border-radius:999px;background:var(--ketchup);color:var(--creme);font-size:.75rem;margin-left:6px;text-align:center}
+section{display:none;padding-block:18px}
+section.is-on{display:block}
+.card{background:var(--brun-2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.row+.row{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.name{font-weight:700}
+.muted{color:var(--creme-2);font-size:.9rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:500 .95rem var(--body);padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--brun-3);color:var(--creme);cursor:pointer;text-decoration:none}
+.btn.primary{background:var(--ketchup);border-color:var(--ketchup)}
+.btn.danger{background:transparent;color:#F5A097;border-color:#8a4a42}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.sm{padding:6px 12px;font-size:.88rem}
+label.f{display:grid;gap:4px;font-size:.88rem;color:var(--creme-2);min-width:0}
+input,select,textarea{font:inherit;color:var(--creme);background:var(--brun);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+input[type=number]{width:110px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cheddar);box-shadow:0 0 0 3px rgba(243,173,63,.25)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+/* interrupteur */
+.sw{position:relative;width:52px;height:30px;flex:none}
+.sw input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;width:100%;height:100%}
+.sw i{position:absolute;inset:0;background:var(--brun);border:1px solid var(--line);border-radius:999px;transition:background .2s}
+.sw i::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--creme-2);transition:transform .2s}
+.sw input:checked+i{background:var(--mesclun);border-color:var(--mesclun)}
+.sw input:checked+i::after{transform:translateX(22px);background:#fff}
+.tag{display:inline-block;font-size:.78rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--brun-3);color:var(--creme-2)}
+.tag.on{background:var(--mesclun);color:#1c2a12}.tag.off{background:var(--brun-3)}.tag.rupt{background:var(--cheddar);color:#2A1A10}.tag.cancel{background:var(--ketchup);color:var(--creme)}
+.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--mesclun);color:#1c2a12;font-weight:500;padding:10px 18px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;z-index:20;max-width:calc(100% - 32px)}
+.toast.is-on{opacity:1;transform:translate(-50%,0)}
+.toast.err{background:var(--ketchup);color:var(--creme)}
+.login{max-width:420px;margin:48px auto;padding:0 16px}
+.login .card{display:grid;gap:12px}
+.status{display:flex;align-items:center;gap:10px;font-size:.95rem}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--mesclun)}
+.dot.off{background:var(--cheddar)}
+.demande{display:grid;gap:6px}
+.demande .meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.92rem}
+.demande .msg{white-space:pre-wrap;background:var(--brun);border-radius:10px;padding:10px 12px;font-size:.95rem}
+.demande select{width:auto}
+.empty{color:var(--creme-2);padding:24px;text-align:center;border:1px dashed var(--line);border-radius:14px}
+.thumb{width:64px;height:64px;border-radius:10px;object-fit:cover;background:var(--brun);flex:none;border:1px solid var(--line)}
+.thumb.none{display:grid;place-items:center;color:var(--creme-2);font-size:.7rem;text-align:center}
+.bline{display:flex;align-items:center;gap:12px;min-width:0}
+.bline>div{min-width:0}
+.order{display:flex;gap:4px}
+.order button{width:34px;height:34px;padding:0;border-radius:8px;border:1px solid var(--line);background:var(--brun);color:var(--creme);cursor:pointer;font-size:1rem}
+.order button:disabled{opacity:.3;cursor:default}
+dialog{border:0;padding:0;background:transparent;max-width:100vw;margin:auto}
+dialog::backdrop{background:rgba(20,12,8,.7)}
+.photoPick img{width:160px;height:160px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.photoPick__empty{width:160px;height:160px;border-radius:12px;border:1px dashed var(--line);display:grid;place-items:center;color:var(--creme-2);font-size:.85rem}
+.sw.disabled{opacity:.4;pointer-events:none}
+</style>
+</head>
+<body>
+
+<div id="login" class="login" hidden>
+  <h1 style="margin-bottom:16px">Tableau de contrôle</h1>
+  <div class="card">
+    <label class="f">Jeton d'accès<input id="token" type="password" autocomplete="current-password" placeholder="Collez votre jeton"></label>
+    <button class="btn primary" id="loginBtn" type="button">Entrer</button>
+    <p class="muted">Le jeton est défini dans Cloudflare Pages (variable ADMIN_TOKEN). Il reste mémorisé sur cet appareil.</p>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="wrap">
+      <h1>L'Arrêt Gourmand</h1>
+      <div style="display:flex;gap:8px;align-items:center">
+        <a class="btn sm" href="/" target="_blank" rel="noopener">Voir le site</a>
+        <button class="btn sm" id="logout" type="button">Quitter</button>
+      </div>
+    </div>
+    <div class="wrap">
+      <nav class="tabs" id="tabs">
+        <button data-tab="carte" class="is-on">Carte</button>
+        <button data-tab="emplacements">Emplacements</button>
+        <button data-tab="tarifs">Tarifs</button>
+        <button data-tab="bandeau">Bandeau</button>
+        <button data-tab="demandes">Demandes<span class="n" id="nNew" hidden></span></button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="card" style="margin-top:16px"><div class="status"><span class="dot" id="stDot"></span><span id="stText">…</span></div></div>
+
+    <section id="tab-carte" class="is-on">
+      <div class="row" style="margin-bottom:12px"><h2 style="margin:0">Burgers à la carte</h2><button class="btn primary sm" id="addBurger" type="button">+ Ajouter un burger</button></div>
+      <div id="burgers"></div>
+      <p class="muted">« Retiré » masque le burger sur le site. « Épuisé ce soir » le laisse visible avec la mention, jusqu'à la date choisie (minuit). Le premier de la liste est mis en avant en grand sur le site.</p>
+    </section>
+
+    <!-- Fiche burger (création / modification) -->
+    <dialog id="burgerDlg">
+      <form class="card" id="burgerForm" method="dialog" style="margin:0;width:min(560px,calc(100vw - 32px));display:grid;gap:12px">
+        <div class="row"><h2 id="burgerDlgTitle" style="margin:0">Nouveau burger</h2><button class="btn sm" type="button" id="burgerCancel">Fermer</button></div>
+        <input type="hidden" id="b_id">
+        <div class="photoPick">
+          <img id="b_preview" alt="" hidden>
+          <div class="photoPick__empty" id="b_noPhoto">Pas encore de photo</div>
+          <label class="btn sm" style="margin-top:10px">Choisir une photo<input id="b_file" type="file" accept="image/*" hidden></label>
+          <span class="muted" id="b_photoInfo" style="margin-left:8px;font-size:.85rem">Carrée de préférence, elle est redimensionnée automatiquement.</span>
+          <input type="hidden" id="b_photo">
+        </div>
+        <label class="f">Nom<input id="b_nom" type="text" maxlength="80" required placeholder="Ex. Le Végé Gourmand"></label>
+        <label class="f">Accroche (optionnelle)<input id="b_accroche" type="text" maxlength="160" placeholder="Ex. Le meilleur mélange sucré-salé dans un Burger !"></label>
+        <label class="f">Composition<textarea id="b_description" rows="3" maxlength="600" placeholder="Un bun boulanger, 150g de Bœuf Charolais Français, …"></textarea></label>
+        <label class="f">Supplément par rapport au prix du burger (€)<input id="b_supplement" type="number" step="0.5" min="0" value="0"></label>
+        <div class="row">
+          <button class="btn danger sm" type="button" id="burgerDelete" hidden>Supprimer ce burger</button>
+          <button class="btn primary" type="submit" id="burgerSave">Enregistrer</button>
+        </div>
+        <p class="muted" id="burgerMsg" hidden></p>
+      </form>
+    </dialog>
+
+    <section id="tab-emplacements">
+      <h2>Emplacements de la semaine</h2>
+      <div id="emplacements"></div>
+      <h2 style="margin-top:24px">Annuler ou déplacer une date</h2>
+      <div class="card">
+        <div class="grid">
+          <label class="f">Date<input id="excDate" type="date"></label>
+          <label class="f">Que se passe-t-il ?<select id="excType"><option value="1">Pas de service ce jour-là</option><option value="0">Lieu ou horaire différent</option></select></label>
+          <label class="f">Message (optionnel)<input id="excMsg" type="text" placeholder="Congés, privatisation, marché de Noël…"></label>
+        </div>
+        <div class="grid" id="excMove" hidden style="margin-top:12px">
+          <label class="f">Ville<input id="excVille" type="text"></label>
+          <label class="f">Lieu<input id="excLieu" type="text"></label>
+          <label class="f">Lien carte<input id="excMap" type="url"></label>
+          <label class="f">Horaires<input id="excHeures" type="text" placeholder="de 19h à 20h30"></label>
+        </div>
+        <div style="margin-top:12px"><button class="btn primary" id="excSave" type="button">Enregistrer</button></div>
+      </div>
+      <div id="exceptions"></div>
+    </section>
+
+    <section id="tab-tarifs">
+      <h2>Tarifs</h2>
+      <div class="card">
+        <div class="grid">
+          <label class="f">Burger seul (€)<input id="p_burger" type="number" step="0.5" min="0"></label>
+          <label class="f">Burger + Frites (€)<input id="p_menu_frites" type="number" step="0.5" min="0"></label>
+          <label class="f">Burger + Frites + Boisson (€)<input id="p_menu_complet" type="number" step="0.5" min="0"></label>
+          <label class="f">Frites seules (€)<input id="p_frites" type="number" step="0.5" min="0"></label>
+        </div>
+        <div style="margin-top:12px"><button class="btn primary" id="prixSave" type="button">Enregistrer les prix</button></div>
+      </div>
+      <h2>Supplément par burger</h2>
+      <div id="supplements"></div>
+      <p class="muted">Les suppléments frites et les suppléments fromage / bacon / œuf sont dans le HTML de la page (index.html, section Tarifs).</p>
+    </section>
+
+    <section id="tab-bandeau">
+      <h2>Bandeau en haut du site</h2>
+      <div class="card">
+        <label class="f">Message (vide = pas de bandeau)<input id="bandeau" type="text" maxlength="300" placeholder="Ex. : Fermé du 24 au 31 décembre, bonnes fêtes !"></label>
+        <div style="margin-top:12px;display:flex;gap:8px"><button class="btn primary" id="bandeauSave" type="button">Enregistrer</button><button class="btn" id="bandeauClear" type="button">Retirer le bandeau</button></div>
+      </div>
+    </section>
+
+    <section id="tab-demandes">
+      <h2>Demandes de devis</h2>
+      <div id="demandes"></div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+  var TOKEN_KEY='lag_admin_token';
+  var token=''; try{token=localStorage.getItem(TOKEN_KEY)||'';}catch(e){}
+  var $=function(s){return document.querySelector(s);};
+  var state=null, demandes=[];
+  var JOURS=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function dateFr(iso){var p=iso.split('-');var d=new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));return JOURS[d.getUTCDay()].toLowerCase()+' '+(+p[2])+'/'+p[1]+'/'+p[0];}
+  var toastT;
+  function toast(msg,err){var t=$('#toast');t.textContent=msg;t.className='toast is-on'+(err?' err':'');clearTimeout(toastT);toastT=setTimeout(function(){t.className='toast';},2200);}
+
+  function api(path,opts){
+    opts=opts||{};
+    return fetch('/api/admin/'+path,{method:opts.method||'GET',headers:{'authorization':'Bearer '+token,'content-type':'application/json'},body:opts.body?JSON.stringify(opts.body):undefined})
+      .then(function(r){if(r.status===401){logout();throw new Error('Jeton refusé');}return r.json();})
+      .then(function(r){if(!r.ok)throw new Error(r.error||'Erreur');return r;});
+  }
+  function save(path,body,label){
+    return api(path,{method:'PUT',body:body}).then(function(){toast(label||'Enregistré');return load();}).catch(function(e){toast(e.message,true);});
+  }
+
+  // ---------- connexion
+  function showLogin(){$('#login').hidden=false;$('#app').hidden=true;}
+  function logout(){token='';try{localStorage.removeItem(TOKEN_KEY);}catch(e){}showLogin();}
+  $('#loginBtn').addEventListener('click',function(){token=$('#token').value.trim();if(!token)return;try{localStorage.setItem(TOKEN_KEY,token);}catch(e){}load(true);});
+  $('#token').addEventListener('keydown',function(e){if(e.key==='Enter')$('#loginBtn').click();});
+  $('#logout').addEventListener('click',logout);
+
+  // ---------- onglets
+  $('#tabs').addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b)return;
+    document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('is-on',x===b);});
+    document.querySelectorAll('main section').forEach(function(s){s.classList.toggle('is-on',s.id==='tab-'+b.dataset.tab);});
+    try{localStorage.setItem('lag_admin_tab',b.dataset.tab);}catch(e){}
+  });
+  try{var t0=localStorage.getItem('lag_admin_tab');if(t0){var b0=document.querySelector('#tabs button[data-tab="'+t0+'"]');if(b0)b0.click();}}catch(e){}
+
+  // ---------- chargement
+  function load(first){
+    return api('state').then(function(r){
+      state=r.state;$('#login').hidden=true;$('#app').hidden=false;
+      render();
+      return api('demandes').then(function(d){demandes=d.demandes;renderDemandes();});
+    }).catch(function(e){if(first)toast(e.message,true);if(!token)showLogin();});
+  }
+
+  function render(){
+    // statut "ce soir"
+    var t=state.tonight;
+    if(t.tonight){$('#stDot').className='dot';$('#stText').textContent='Ce soir : '+t.tonight.ville+', '+t.tonight.lieu+' ('+(t.tonight.heures||'de 19h à 20h30')+')';}
+    else{$('#stDot').className='dot off';$('#stText').textContent='Pas de service ce soir'+(t.cancelledToday&&t.cancelledToday.message?' ('+t.cancelledToday.message+')':'')+(t.next?'. Prochaine escale : '+(t.next.inDays===1?'demain':dateFr(t.next.date))+' à '+t.next.ville:'');}
+
+    // burgers
+    var nb=state.burgers.length;
+    $('#burgers').innerHTML=nb?state.burgers.map(function(b,i){
+      return '<div class="card"><div class="row">'+
+        '<div class="bline">'+(b.photo?'<img class="thumb" src="'+esc(b.photo)+'" alt="">':'<div class="thumb none">Pas de photo</div>')+
+        '<div><div class="name">'+esc(b.nom)+(i===0?' <span class="tag rupt">Mis en avant</span>':'')+'</div><div class="muted">'+(b.actif?(b.rupture?'<span class="tag rupt">Épuisé jusqu\'au '+esc(b.rupture_jusqua)+'</span>':'<span class="tag on">À la carte</span>'):'<span class="tag off">Retiré</span>')+(b.supplement?' <span class="tag">+'+b.supplement+' €</span>':'')+'</div></div></div>'+
+        '<label class="sw" title="À la carte"><input type="checkbox" data-burger="'+b.id+'" '+(b.actif?'checked':'')+'><i></i></label>'+
+        '</div><div class="row" style="border-top:1px dashed var(--line)">'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn sm" data-edit="'+b.id+'">Modifier</button>'+
+        '<button class="btn sm" data-rupture="'+b.id+'" data-jusqua="'+state.today+'">Épuisé ce soir</button>'+
+        (b.rupture?'<button class="btn sm" data-rupture="'+b.id+'" data-jusqua="">De retour</button>':'')+'</div>'+
+        '<div class="order"><button type="button" data-move="'+b.id+'" data-dir="-1" '+(i===0?'disabled':'')+' aria-label="Monter">↑</button><button type="button" data-move="'+b.id+'" data-dir="1" '+(i===nb-1?'disabled':'')+' aria-label="Descendre">↓</button></div>'+
+        '</div></div>';
+    }).join(''):'<p class="empty">Aucun burger. Ajoutez-en un avec le bouton ci-dessus.</p>';
+
+    // suppléments (onglet tarifs)
+    $('#supplements').innerHTML='<div class="card">'+state.burgers.map(function(b){
+      return '<div class="row"><span class="name">'+esc(b.nom)+'</span><div style="display:flex;gap:8px;align-items:center"><input type="number" step="0.5" min="0" value="'+b.supplement+'" data-sup="'+b.id+'"> €</div></div>';
+    }).join('')+'<div style="margin-top:12px"><button class="btn primary" id="supSave" type="button">Enregistrer les suppléments</button></div></div>';
+
+    // emplacements
+    $('#emplacements').innerHTML=state.emplacements.map(function(e){
+      return '<div class="card"><div class="row"><div><div class="name">'+JOURS[e.jour]+' · '+esc(e.ville)+'</div><div class="muted">'+esc(e.lieu)+' · '+esc(e.heures)+' '+(e.actif?'':'<span class="tag off">Suspendu</span>')+'</div></div>'+
+        '<label class="sw" title="Actif"><input type="checkbox" data-emp="'+e.id+'" '+(e.actif?'checked':'')+'><i></i></label></div>'+
+        '<details style="margin-top:10px"><summary class="muted" style="cursor:pointer">Modifier</summary><div class="grid" style="margin-top:10px">'+
+        '<label class="f">Ville<input data-empf="ville" data-id="'+e.id+'" value="'+esc(e.ville)+'"></label>'+
+        '<label class="f">Lieu<input data-empf="lieu" data-id="'+e.id+'" value="'+esc(e.lieu)+'"></label>'+
+        '<label class="f">Lien carte<input data-empf="map_url" data-id="'+e.id+'" value="'+esc(e.map_url||'')+'"></label>'+
+        '<label class="f">Horaires<input data-empf="heures" data-id="'+e.id+'" value="'+esc(e.heures)+'"></label>'+
+        '</div><div style="margin-top:10px"><button class="btn sm primary" data-empsave="'+e.id+'">Enregistrer</button></div></details></div>';
+    }).join('');
+
+    // exceptions
+    var ex=state.exceptions.filter(function(x){return x.date>=state.today;});
+    $('#exceptions').innerHTML=ex.length?ex.map(function(x){
+      return '<div class="card"><div class="row"><div><div class="name">'+dateFr(x.date)+' '+(x.annule?'<span class="tag cancel">Annulé</span>':'<span class="tag rupt">Déplacé</span>')+'</div><div class="muted">'+(x.annule?esc(x.message||''):esc((x.ville||'')+(x.lieu?', '+x.lieu:'')+(x.heures?' · '+x.heures:''))+(x.message?' · '+esc(x.message):''))+'</div></div>'+
+        '<button class="btn sm danger" data-excdel="'+x.date+'">Rétablir</button></div></div>';
+    }).join(''):'<p class="empty">Aucune date annulée ou déplacée à venir.</p>';
+
+    // tarifs & bandeau
+    $('#p_burger').value=state.prix.burger;$('#p_menu_frites').value=state.prix.menu_frites;$('#p_menu_complet').value=state.prix.menu_complet;$('#p_frites').value=state.prix.frites;
+    $('#bandeau').value=state.bandeau||'';
+  }
+
+  function renderDemandes(){
+    var nouv=demandes.filter(function(d){return d.statut==='nouveau';}).length;
+    $('#nNew').hidden=!nouv;$('#nNew').textContent=nouv;
+    var libel={nouveau:'Nouveau',repondu:'Répondu',signe:'Signé',perdu:'Sans suite'};
+    $('#demandes').innerHTML=demandes.length?demandes.map(function(d){
+      return '<div class="card demande"><div class="row"><div class="name">'+esc(d.nom)+' <span class="muted">· n°'+d.id+' · '+esc((d.recu_le||'').replace('T',' ').slice(0,16))+'</span></div>'+
+        '<select data-statut="'+d.id+'">'+Object.keys(libel).map(function(k){return '<option value="'+k+'"'+(d.statut===k?' selected':'')+'>'+libel[k]+'</option>';}).join('')+'</select></div>'+
+        '<div class="meta">'+(d.type?'<span><b>'+esc(d.type)+'</b></span>':'')+(d.date_event?'<span>'+esc(d.date_event)+'</span>':'')+(d.convives?'<span>'+esc(d.convives)+' convives</span>':'')+(d.lieu?'<span>'+esc(d.lieu)+'</span>':'')+'</div>'+
+        '<div class="meta"><a href="tel:'+esc(d.tel)+'">'+esc(d.tel)+'</a><a href="mailto:'+esc(d.email)+'">'+esc(d.email)+'</a>'+(d.page?'<span class="muted">via '+esc(d.page)+'</span>':'')+(d.mail_envoye?'':'<span class="tag rupt">mail non envoyé</span>')+'</div>'+
+        (d.message?'<div class="msg">'+esc(d.message)+'</div>':'')+'</div>';
+    }).join(''):'<p class="empty">Aucune demande pour le moment.</p>';
+  }
+
+  // ---------- fiche burger (création / modification)
+  var bdlg=$('#burgerDlg');
+  function openBurger(b){
+    $('#burgerDlgTitle').textContent=b?'Modifier le burger':'Nouveau burger';
+    $('#b_id').value=b?b.id:'';$('#b_nom').value=b?b.nom:'';$('#b_accroche').value=b?b.accroche:'';$('#b_description').value=b?b.description:'';$('#b_supplement').value=b?b.supplement:0;
+    setPhoto(b?b.photo:'');$('#b_file').value='';$('#burgerDelete').hidden=!b;$('#burgerMsg').hidden=true;
+    bdlg.showModal();
+  }
+  function setPhoto(path){$('#b_photo').value=path||'';$('#b_preview').hidden=!path;$('#b_noPhoto').hidden=!!path;if(path)$('#b_preview').src=path;}
+  $('#addBurger').addEventListener('click',function(){openBurger(null);});
+  $('#burgerCancel').addEventListener('click',function(){bdlg.close();});
+  bdlg.addEventListener('click',function(e){if(e.target===bdlg)bdlg.close();});
+
+  // Photo : redimensionnée dans le navigateur (1200 px max, JPEG) puis envoyée au stockage
+  $('#b_file').addEventListener('change',function(){
+    var f=this.files[0];if(!f)return;
+    var info=$('#b_photoInfo');info.textContent='Préparation…';
+    resizeImage(f,1200).then(function(blob){
+      info.textContent='Envoi…';
+      return fetch('/api/admin/photo',{method:'POST',headers:{'authorization':'Bearer '+token,'content-type':'image/jpeg','x-filename':f.name},body:blob}).then(function(r){return r.json();});
+    }).then(function(r){
+      if(!r.ok)throw new Error(r.error||'Envoi impossible');
+      setPhoto(r.path);info.textContent='Photo prête.';
+    }).catch(function(err){info.textContent=err.message;toast(err.message,true);});
+  });
+  function resizeImage(file,max){
+    return new Promise(function(res,rej){
+      var img=new Image();var url=URL.createObjectURL(file);
+      img.onload=function(){
+        var w=img.naturalWidth,h=img.naturalHeight,s=Math.min(1,max/Math.max(w,h));
+        var c=document.createElement('canvas');c.width=Math.round(w*s);c.height=Math.round(h*s);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function(b){b?res(b):rej(new Error('Image illisible'));},'image/jpeg',0.85);
+      };
+      img.onerror=function(){rej(new Error('Image illisible'));};
+      img.src=url;
+    });
+  }
+  $('#burgerForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var id=$('#b_id').value,body={nom:$('#b_nom').value,accroche:$('#b_accroche').value,description:$('#b_description').value,supplement:$('#b_supplement').value,photo:$('#b_photo').value};
+    if(!body.nom.trim()){toast('Le nom est obligatoire',true);return;}
+    $('#burgerSave').disabled=true;
+    api(id?'burgers/'+id:'burgers',{method:id?'PUT':'POST',body:body}).then(function(){toast(id?'Burger modifié':'Burger ajouté');bdlg.close();return load();}).catch(function(err){toast(err.message,true);}).finally(function(){$('#burgerSave').disabled=false;});
+  });
+  $('#burgerDelete').addEventListener('click',function(){
+    var id=$('#b_id').value,msg=$('#burgerMsg');
+    if(this.dataset.confirm!=='1'){this.dataset.confirm='1';this.textContent='Confirmer la suppression';msg.textContent='Le burger et sa photo seront supprimés définitivement. Pour simplement le masquer, utilisez l\'interrupteur « À la carte ».';msg.hidden=false;return;}
+    api('burgers/'+id,{method:'DELETE'}).then(function(){toast('Burger supprimé');bdlg.close();return load();}).catch(function(err){toast(err.message,true);});
+  });
+  bdlg.addEventListener('close',function(){var d=$('#burgerDelete');d.dataset.confirm='';d.textContent='Supprimer ce burger';});
+
+  // ---------- actions (délégation)
+  document.addEventListener('change',function(e){
+    var t=e.target;
+    if(t.dataset.burger)save('burgers/'+t.dataset.burger,{actif:t.checked},t.checked?'Burger remis à la carte':'Burger retiré de la carte');
+    if(t.dataset.emp)save('emplacements/'+t.dataset.emp,{actif:t.checked},t.checked?'Emplacement activé':'Emplacement suspendu');
+    if(t.dataset.statut)save('demandes/'+t.dataset.statut,{statut:t.value},'Statut mis à jour').then(function(){return api('demandes').then(function(d){demandes=d.demandes;renderDemandes();});});
+    if(t.id==='excType')$('#excMove').hidden=t.value!=='0';
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b)return;
+    if(b.dataset.rupture!==undefined)save('burgers/'+b.dataset.rupture,{rupture_jusqua:b.dataset.jusqua||null},b.dataset.jusqua?'Marqué épuisé ce soir':'Burger de retour');
+    if(b.dataset.edit){var bb=state.burgers.filter(function(x){return x.id===b.dataset.edit;})[0];if(bb)openBurger(bb);}
+    if(b.dataset.move){
+      var ids=state.burgers.map(function(x){return x.id;}),i=ids.indexOf(b.dataset.move),j=i+Number(b.dataset.dir);
+      if(j<0||j>=ids.length)return;
+      ids.splice(j,0,ids.splice(i,1)[0]);
+      save('burgers/ordre',{ids:ids},'Ordre modifié');
+    }
+    if(b.dataset.empsave){var id=b.dataset.empsave,body={};document.querySelectorAll('[data-empf][data-id="'+id+'"]').forEach(function(i){body[i.dataset.empf]=i.value;});save('emplacements/'+id,body);}
+    if(b.dataset.excdel)api('exceptions/'+b.dataset.excdel,{method:'DELETE'}).then(function(){toast('Date rétablie');load();}).catch(function(err){toast(err.message,true);});
+    if(b.id==='excSave'){
+      var d=$('#excDate').value;if(!d){toast('Choisissez une date',true);return;}
+      var annule=$('#excType').value==='1';
+      save('exceptions/'+d,{annule:annule,message:$('#excMsg').value,ville:annule?null:$('#excVille').value,lieu:annule?null:$('#excLieu').value,map_url:annule?null:$('#excMap').value,heures:annule?null:$('#excHeures').value},annule?'Date annulée':'Date déplacée')
+        .then(function(){$('#excDate').value='';$('#excMsg').value='';});
+    }
+    if(b.id==='prixSave')save('reglages',{prix_burger:$('#p_burger').value,prix_menu_frites:$('#p_menu_frites').value,prix_menu_complet:$('#p_menu_complet').value,prix_frites:$('#p_frites').value},'Prix enregistrés');
+    if(b.id==='supSave'){var inputs=document.querySelectorAll('[data-sup]');Promise.all(Array.prototype.map.call(inputs,function(i){return api('burgers/'+i.dataset.sup,{method:'PUT',body:{supplement:i.value}});})).then(function(){toast('Suppléments enregistrés');load();}).catch(function(err){toast(err.message,true);});}
+    if(b.id==='bandeauSave')save('reglages',{bandeau:$('#bandeau').value},'Bandeau enregistré');
+    if(b.id==='bandeauClear'){$('#bandeau').value='';save('reglages',{bandeau:''},'Bandeau retiré');}
+  });
+
+  if(token)load(true);else showLogin();
+})();
+</script>
+</body>
+</html>
